@@ -95,32 +95,54 @@
     /* ─── ANIMATED CARD ─── */
     .benefit-card--animated { cursor: pointer; min-height: 228px; }
 
+    /* Flip wrapper */
     .card-img-area--animated {
       height: 64px;
-      position: relative;
+      perspective: 500px;
+      display: flex;
+      align-items: flex-end;
     }
 
-    .card-img-layer {
-      position: absolute;
-      bottom: 0;
-      left: 0;
+    .card-flip-inner {
+      position: relative;
+      height: 64px;
+      width: 64px; /* will be auto-sized by image */
+      transform-origin: center center;
+      transition: transform 0.32s cubic-bezier(0.4, 0, 0.6, 1),
+                  filter 0.32s ease,
+                  opacity 0.32s ease;
+      transform: rotateY(0deg);
+    }
+
+    /* During flip-out: rotate to edge */
+    .card-flip-inner.flip-out {
+      transform: rotateY(90deg);
+      opacity: 0.2;
+    }
+
+    /* Just before flip-in: placed at -90deg instantly (no transition) */
+    .card-flip-inner.flip-pre-in {
+      transition: none;
+      transform: rotateY(-90deg);
+      opacity: 0.2;
+    }
+
+    /* Flip-in: animates back to 0 */
+    .card-flip-inner.flip-in {
+      transform: rotateY(0deg);
+      opacity: 1;
+    }
+
+    .card-flip-inner img {
       height: 64px;
       width: auto;
-      opacity: 0;
-      transition: opacity 0.55s ease, filter 0.55s ease;
+      display: block;
     }
 
-    /* State 1: tilted, grayscale, 40% opacity */
-    #img-state-1 { filter: grayscale(75%) brightness(1.05); }
-    #img-state-1.visible { opacity: 0.4; }
-
-    /* State 2: front, slight grayscale, 85% opacity */
-    #img-state-2 { filter: grayscale(15%); }
-    #img-state-2.visible { opacity: 0.85; }
-
-    /* State 3: full color, full opacity */
-    #img-state-3 { filter: none; }
-    #img-state-3.visible { opacity: 1; }
+    /* Per-state filter on the inner wrapper */
+    .card-flip-inner.state-waiting { filter: grayscale(75%) brightness(1.05); opacity: 0.4; }
+    .card-flip-inner.state-processing { filter: grayscale(10%); opacity: 0.9; }
+    .card-flip-inner.state-active { filter: none; opacity: 1; }
 
     /* Animated title & desc */
     .anim-title {
@@ -247,9 +269,9 @@
         <div class="benefit-card benefit-card--animated is-waiting" id="card-animated">
 
           <div class="card-img-area--animated">
-            <img id="img-state-1" class="card-img-layer visible" src="1.png" alt="Cartão">
-            <img id="img-state-2" class="card-img-layer" src="2.png" alt="Cartão">
-            <img id="img-state-3" class="card-img-layer" src="4.png" alt="Cartão">
+            <div class="card-flip-inner state-waiting" id="card-flipper">
+              <img id="card-face-img" src="1.png" alt="Cartão">
+            </div>
           </div>
 
           <p class="anim-title" id="anim-title">Mais limite no cartão</p>
@@ -304,7 +326,8 @@
   <script>
     const STATES = [
       {
-        imgId:     'img-state-1',
+        imgSrc:    '1.png',
+        flipClass: 'state-waiting',
         cardClass: 'is-waiting',
         title:     'Mais limite no cartão',
         desc:      'Pode chegar ao dobro do seu salário.',
@@ -314,7 +337,8 @@
         pillPx:    '16px',
       },
       {
-        imgId:     'img-state-2',
+        imgSrc:    '3.png',
+        flipClass: 'state-processing',
         cardClass: 'is-processing',
         title:     'Mais limite no cartão',
         desc:      'Vai ser liberado em até 20 dias.',
@@ -324,7 +348,8 @@
         pillPx:    '13px',
       },
       {
-        imgId:     'img-state-3',
+        imgSrc:    '4.png',
+        flipClass: 'state-active',
         cardClass: 'is-active',
         title:     'Mais limite liberado',
         desc:      'Use o cartão e ganhe até 5% de cashback.',
@@ -336,37 +361,49 @@
     ];
 
     let current = 0, paused = false, timer = null;
-    const DELAY = 2800;
-    const FADE  = 220;
+    const DELAY    = 2800;
+    const FADE     = 220;
+    const FLIP_MID = 340; // ms to midpoint of flip
 
-    const card      = document.getElementById('card-animated');
-    const titleEl   = document.getElementById('anim-title');
-    const descEl    = document.getElementById('anim-desc');
-    const pillEl    = document.getElementById('status-pill');
-    const pillText  = document.getElementById('pill-text');
-    const ctrlLabel = document.getElementById('ctrl-label');
-    const btnPause  = document.getElementById('btn-pause');
-    const iconPause = document.getElementById('icon-pause');
-    const iconPlay  = document.getElementById('icon-play');
-
-    const imgEls = {
-      'img-state-1': document.getElementById('img-state-1'),
-      'img-state-2': document.getElementById('img-state-2'),
-      'img-state-3': document.getElementById('img-state-3'),
-    };
+    const card       = document.getElementById('card-animated');
+    const titleEl    = document.getElementById('anim-title');
+    const descEl     = document.getElementById('anim-desc');
+    const pillEl     = document.getElementById('status-pill');
+    const pillText   = document.getElementById('pill-text');
+    const flipper    = document.getElementById('card-flipper');
+    const faceImg    = document.getElementById('card-face-img');
+    const ctrlLabel  = document.getElementById('ctrl-label');
+    const btnPause   = document.getElementById('btn-pause');
+    const iconPause  = document.getElementById('icon-pause');
+    const iconPlay   = document.getElementById('icon-play');
 
     function applyState(idx) {
       const s = STATES[idx];
 
-      // Card class
+      // ── Card class ──
       card.classList.remove('is-waiting', 'is-processing', 'is-active');
       card.classList.add(s.cardClass);
 
-      // Image crossfade
-      Object.values(imgEls).forEach(el => el.classList.remove('visible'));
-      imgEls[s.imgId].classList.add('visible');
+      // ── 3D Flip ──
+      // Step 1: rotate out to 90deg (edge-on)
+      flipper.classList.remove('state-waiting', 'state-processing', 'state-active', 'flip-pre-in', 'flip-in');
+      flipper.classList.add('flip-out');
 
-      // Title & desc fade
+      setTimeout(() => {
+        // Step 2: instantly jump to -90deg, swap image & filter class
+        faceImg.src = s.imgSrc;
+        flipper.classList.remove('flip-out');
+        flipper.classList.add('flip-pre-in');
+        flipper.classList.add(s.flipClass);
+
+        // Step 3: next frame — animate back to 0deg
+        requestAnimationFrame(() => requestAnimationFrame(() => {
+          flipper.classList.remove('flip-pre-in');
+          flipper.classList.add('flip-in');
+        }));
+      }, FLIP_MID);
+
+      // ── Title & desc fade ──
       titleEl.classList.add('fading');
       descEl.classList.add('fading');
       setTimeout(() => {
@@ -376,12 +413,12 @@
         descEl.classList.remove('fading');
       }, FADE);
 
-      // Pill color + size
+      // ── Pill color + size ──
       pillEl.style.backgroundColor = s.pillBg;
       pillEl.style.color            = s.pillColor;
       pillEl.style.padding          = `0 ${s.pillPx}`;
 
-      // Pill text slide
+      // ── Pill text slide ──
       pillText.classList.add('exit-up');
       setTimeout(() => {
         pillText.textContent = s.pillText;
