@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Proposta F · Flip & Compact</title>
+  <style>
+    @font-face { font-family: 'Proxima Nova'; src: url('https://http2.mlstatic.com/ui/webfonts/v3.0.0/proxima-nova/proximanova-light.woff2') format('woff2'); font-weight: 300; font-style: normal; font-display: swap; }
+    @font-face { font-family: 'Proxima Nova'; src: url('https://http2.mlstatic.com/ui/webfonts/v3.0.0/proxima-nova/proximanova-regular.woff2') format('woff2'); font-weight: 400; font-style: normal; font-display: swap; }
+    @font-face { font-family: 'Proxima Nova'; src: url('https://http2.mlstatic.com/ui/webfonts/v3.0.0/proxima-nova/proximanova-semibold.woff2') format('woff2'); font-weight: 600; font-style: normal; font-display: swap; }
+    @font-face { font-family: 'Proxima Nova'; src: url('https://http2.mlstatic.com/ui/webfonts/v4.2.0/proxima-nova/proxima-nova-700.woff2') format('woff2'); font-weight: 700; font-style: normal; font-display: swap; }
+
+    :root {
+      --c-text: #282834;
+      --c-secondary: #646587;
+      --c-muted: #9c9ebf;
+      --c-stroke: #d0d4e6;
+      --c-bg: #eef0f5;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--c-bg);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 32px 0 48px;
+      font-family: 'Proxima Nova', -apple-system, Helvetica Neue, Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .proposal-label { text-align: center; margin-bottom: 20px; }
+    .proposal-name { font-size: 13px; font-weight: 700; color: var(--c-secondary); letter-spacing: 0.5px; }
+    .proposal-tag { font-size: 11px; color: var(--c-muted); margin-top: 3px; }
+
+    .phone {
+      width: 360px;
+      background: #fff;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.18);
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+      padding-bottom: 0;
+    }
+
+    .top-container { display: flex; flex-direction: column; gap: 24px; }
+
+    .status-bar { height: 52px; padding: 10px 24px; display: flex; align-items: flex-end; justify-content: space-between; position: relative; }
+    .status-time { font-size: 14px; font-weight: 500; color: var(--c-text); letter-spacing: 0.14px; line-height: 20px; }
+    .status-camera { position: absolute; top: 18px; left: 50%; transform: translateX(-50%); width: 12px; height: 12px; background: #09090c; border-radius: 50%; }
+    .status-icons { display: flex; align-items: center; gap: 6px; }
+
+    .header { display: flex; flex-direction: column; }
+    .header-nav { padding: 8px 16px; display: flex; align-items: center; justify-content: space-between; }
+    .icon-btn { width: 40px; height: 40px; border-radius: 12px; background: #e9f1ff; display: flex; align-items: center; justify-content: center; border: none; cursor: pointer; flex-shrink: 0; }
+    .header-title { padding: 4px 16px 16px; font-size: 28px; font-weight: 700; color: var(--c-text); line-height: 34px; letter-spacing: -0.3px; }
+
+    .approval-status { padding: 0 4px; }
+    .bank-row { display: flex; align-items: center; gap: 12px; padding: 0 12px; padding-top: 4px; }
+    .bank-thumbnail { width: 48px; height: 48px; border-radius: 50%; border: 2px solid var(--c-stroke); display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0; background: white; }
+    .bank-thumbnail img { width: 18px; height: 18px; object-fit: contain; }
+    .bank-content { display: flex; flex-direction: column; gap: 4px; padding-top: 4px; }
+    .bank-name-row { display: flex; align-items: center; gap: 4px; }
+    .bank-name { font-size: 16px; font-weight: 600; color: var(--c-text); line-height: 20px; }
+    .badge-pill { display: inline-flex; align-items: center; gap: 4px; background: #defade; border-radius: 9999px; padding: 2px 8px; height: 20px; width: fit-content; }
+    .badge-pill-text { font-size: 10px; font-weight: 600; color: #124515; line-height: 12px; }
+
+    .benefits-container { display: flex; flex-direction: column; gap: 16px; flex: 1; }
+    .section-title { padding: 0 16px; font-size: 18px; font-weight: 700; color: var(--c-text); line-height: 22px; }
+    .benefits-grid { padding: 0 16px; display: flex; flex-wrap: wrap; gap: 12px; overflow: hidden; }
+
+    .benefit-card {
+      width: 158px; min-width: 158px; max-width: 158px;
+      background: #fff;
+      border-radius: 20px;
+      border: 1px solid var(--c-stroke);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card-img-area { height: 56px; display: flex; align-items: flex-end; }
+    .card-img-area img { height: 56px; width: auto; max-width: 100%; object-fit: contain; object-position: left bottom; }
+    .card-title { font-size: 16px; font-weight: 700; color: var(--c-text); line-height: 20px; margin-top: 12px; }
+    .card-desc { font-size: 12px; color: var(--c-text); line-height: 16px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin-top: 8px; }
+    .card-badge { display: inline-flex; align-items: center; border-radius: 9999px; padding: 3px 10px; font-size: 11px; font-weight: 600; width: fit-content; line-height: 16px; margin-top: 16px; }
+    .badge-active { background: #defade; color: #124515; }
+    .card-textlink { font-size: 14px; font-weight: 600; color: #434ce4; text-decoration: none; display: inline-flex; align-items: center; gap: 4px; margin-top: 16px; }
+    .card-textlink:hover { text-decoration: underline; }
+
+    /* ─── ANIMATED CARD ─── */
+    .benefit-card--animated { cursor: pointer; min-height: 228px; }
+
+    .card-img-area--animated {
+      height: 64px;
+      position: relative;
+    }
+
+    .card-img-layer {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      height: 64px;
+      width: auto;
+      opacity: 0;
+      transition: opacity 0.55s ease, filter 0.55s ease;
+    }
+
+    /* State 1: tilted, grayscale, 40% opacity */
+    #img-state-1 { filter: grayscale(75%) brightness(1.05); }
+    #img-state-1.visible { opacity: 0.4; }
+
+    /* State 2: front, slight grayscale, 85% opacity */
+    #img-state-2 { filter: grayscale(15%); }
+    #img-state-2.visible { opacity: 0.85; }
+
+    /* State 3: full color, full opacity */
+    #img-state-3 { filter: none; }
+    #img-state-3.visible { opacity: 1; }
+
+    /* Animated title & desc */
+    .anim-title {
+      font-size: 16px;
+      font-weight: 700;
+      line-height: 20px;
+      margin-top: 12px;
+      transition: color 0.4s ease, opacity 0.22s ease, transform 0.22s ease;
+    }
+    .anim-desc {
+      font-size: 12px;
+      line-height: 16px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      margin-top: 8px;
+      transition: color 0.4s ease, opacity 0.22s ease;
+    }
+
+    .is-waiting .anim-title,
+    .is-waiting .anim-desc { color: var(--c-muted); }
+
+    .anim-title.fading { opacity: 0; transform: translateY(-4px); }
+    .anim-desc.fading  { opacity: 0; }
+
+    /* ─── STATUS PILL ─── */
+    .status-pill {
+      margin-top: 16px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 9999px;
+      overflow: hidden;
+      height: 26px;
+      transition:
+        background-color 0.45s ease,
+        color 0.45s ease,
+        padding 0.5s cubic-bezier(0.34, 1.15, 0.64, 1);
+      background-color: #e7e9f3;
+      color: #282834;
+      padding: 0 16px;
+    }
+
+    .pill-track {
+      position: relative;
+      overflow: hidden;
+      height: 16px;
+      display: flex;
+      align-items: center;
+    }
+
+    .pill-text {
+      font-size: 11px;
+      font-weight: 600;
+      line-height: 16px;
+      white-space: nowrap;
+      display: block;
+      transition: transform 0.38s cubic-bezier(0.34, 1.1, 0.64, 1), opacity 0.28s ease;
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    .pill-text.exit-up       { transform: translateY(-130%); opacity: 0; }
+    .pill-text.enter-from-below { transform: translateY(130%); opacity: 0; }
+
+    .bottom-indicator { min-height: 24px; max-height: 24px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .home-pill { width: 108px; height: 4px; background: #09090c; border-radius: 12px; }
+
+    .play-control { display: flex; align-items: center; justify-content: center; gap: 16px; margin-top: 20px; }
+    .ctrl-btn { width: 32px; height: 32px; border-radius: 50%; background: rgba(255,255,255,0.6); border: 1px solid var(--c-stroke); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.2s; }
+    .ctrl-btn:hover { background: rgba(255,255,255,0.9); }
+    .ctrl-label { font-size: 11px; font-weight: 600; color: var(--c-muted); letter-spacing: 0.2px; min-width: 56px; text-align: center; }
+  </style>
+</head>
+<body>
+
+  <div class="proposal-label">
+    <div class="proposal-name">Proposta F</div>
+    <div class="proposal-tag">Flip · Compact</div>
+  </div>
+
+  <div class="phone">
+    <div class="top-container">
+      <div class="header">
+        <div class="status-bar">
+          <span class="status-time">9:30</span>
+          <div class="status-camera"></div>
+          <div class="status-icons">
+            <svg width="17" height="13" viewBox="0 0 17 13" fill="none"><path d="M8.5 10a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3z" fill="#282834"/><path d="M4.86 6.86a5.14 5.14 0 0 1 7.28 0" stroke="#282834" stroke-width="1.4" stroke-linecap="round" fill="none"/><path d="M1.5 3.5a10.5 10.5 0 0 1 14 0" stroke="#282834" stroke-width="1.4" stroke-linecap="round" fill="none"/></svg>
+            <svg width="17" height="12" viewBox="0 0 17 12" fill="#282834"><rect x="0" y="8" width="3" height="4" rx="0.5"/><rect x="4.5" y="5.5" width="3" height="6.5" rx="0.5"/><rect x="9" y="3" width="3" height="9" rx="0.5"/><rect x="13.5" y="0" width="3" height="12" rx="0.5"/></svg>
+            <svg width="9" height="15" viewBox="0 0 9 15" fill="none"><rect x="0.75" y="2" width="7.5" height="12" rx="1.5" stroke="#282834" stroke-width="1.5"/><rect x="2" y="3.5" width="5" height="9" rx="0.5" fill="#282834"/><path d="M3 0.5h3a.5.5 0 0 1 .5.5v1H2.5V1A.5.5 0 0 1 3 .5z" fill="#282834"/></svg>
+          </div>
+        </div>
+        <div class="header-nav">
+          <button class="icon-btn"><img src="Chevron left.svg" width="20" height="20" alt=""></button>
+          <button class="icon-btn"><img src="IA Star.svg" width="20" height="20" alt=""></button>
+        </div>
+        <h1 class="header-title">Portabilidade de salário</h1>
+      </div>
+
+      <div class="approval-status">
+        <div class="bank-row">
+          <div class="bank-thumbnail"><img src="Banco_do_brasil.svg" width="18" height="18" alt="Banco do Brasil"></div>
+          <div class="bank-content">
+            <div class="bank-name-row">
+              <span class="bank-name">Do Banco do Brasil</span>
+              <img src="Chevron down.svg" width="20" height="20" alt="">
+            </div>
+            <div class="badge-pill">
+              <img src="Feedback positive.svg" width="12" height="12" alt="">
+              <span class="badge-pill-text">1º salário entrou</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="benefits-container">
+      <h2 class="section-title">Seus benefícios</h2>
+      <div class="benefits-grid">
+
+        <!-- ANIMATED CARD -->
+        <div class="benefit-card benefit-card--animated is-waiting" id="card-animated">
+
+          <div class="card-img-area--animated">
+            <img id="img-state-1" class="card-img-layer visible" src="1.png" alt="Cartão">
+            <img id="img-state-2" class="card-img-layer" src="2.png" alt="Cartão">
+            <img id="img-state-3" class="card-img-layer" src="4.png" alt="Cartão">
+          </div>
+
+          <p class="anim-title" id="anim-title">Mais limite no cartão</p>
+          <p class="anim-desc" id="anim-desc">Pode chegar ao dobro do seu salário.</p>
+
+          <div class="status-pill" id="status-pill">
+            <div class="pill-track">
+              <span class="pill-text" id="pill-text">Aguardando 1º salário</span>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Static cards -->
+        <div class="benefit-card">
+          <div class="card-img-area"><img src="meli+ mini.png" alt="Meli+"></div>
+          <p class="card-title">Meli+ Essencial grátis</p>
+          <p class="card-desc">Frete grátis rápido e até 120% do CDI.</p>
+          <span class="card-badge badge-active">Ativo</span>
+        </div>
+
+        <div class="benefit-card">
+          <div class="card-img-area"><img src="Sorteo mini.png" alt="Sorteio"></div>
+          <p class="card-title">Sorteio Salário em dobro</p>
+          <p class="card-desc">Só falta confirmar sua participação.</p>
+          <a href="#" class="card-textlink">Participar <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8H13M13 8L9 4M13 8L9 12" stroke="#434ce4" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+        </div>
+
+        <div class="benefit-card">
+          <div class="card-img-area"><img src="Seguro mini.png" alt="Seguro"></div>
+          <p class="card-title">Seguro com 25% OFF</p>
+          <p class="card-desc">Liberado! Contrate por R$ 5,99/mês.</p>
+          <a href="#" class="card-textlink">Contratar <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8H13M13 8L9 4M13 8L9 12" stroke="#434ce4" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="bottom-indicator"><div class="home-pill"></div></div>
+  </div>
+
+  <div class="play-control">
+    <button class="ctrl-btn" id="btn-prev"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M9 2L4 7L9 12" stroke="#646587" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    <span class="ctrl-label" id="ctrl-label">Auto-play</span>
+    <button class="ctrl-btn" id="btn-pause">
+      <svg id="icon-pause" width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="2.5" y="2" width="3" height="10" rx="1" fill="#646587"/><rect x="8.5" y="2" width="3" height="10" rx="1" fill="#646587"/></svg>
+      <svg id="icon-play" width="14" height="14" viewBox="0 0 14 14" fill="none" style="display:none"><path d="M3 2L12 7L3 12V2Z" fill="#646587"/></svg>
+    </button>
+    <button class="ctrl-btn" id="btn-next"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5 2L10 7L5 12" stroke="#646587" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+  </div>
+
+  <script>
+    const STATES = [
+      {
+        imgId:     'img-state-1',
+        cardClass: 'is-waiting',
+        title:     'Mais limite no cartão',
+        desc:      'Pode chegar ao dobro do seu salário.',
+        pillText:  'Aguardando 1º salário',
+        pillBg:    '#e7e9f3',
+        pillColor: '#282834',
+        pillPx:    '16px',
+      },
+      {
+        imgId:     'img-state-2',
+        cardClass: 'is-processing',
+        title:     'Mais limite no cartão',
+        desc:      'Vai ser liberado em até 20 dias.',
+        pillText:  'Em processamento',
+        pillBg:    '#e9f1ff',
+        pillColor: '#272c96',
+        pillPx:    '13px',
+      },
+      {
+        imgId:     'img-state-3',
+        cardClass: 'is-active',
+        title:     'Mais limite liberado',
+        desc:      'Use o cartão e ganhe até 5% de cashback.',
+        pillText:  'Ativo',
+        pillBg:    '#defade',
+        pillColor: '#124515',
+        pillPx:    '10px',
+      },
+    ];
+
+    let current = 0, paused = false, timer = null;
+    const DELAY = 2800;
+    const FADE  = 220;
+
+    const card      = document.getElementById('card-animated');
+    const titleEl   = document.getElementById('anim-title');
+    const descEl    = document.getElementById('anim-desc');
+    const pillEl    = document.getElementById('status-pill');
+    const pillText  = document.getElementById('pill-text');
+    const ctrlLabel = document.getElementById('ctrl-label');
+    const btnPause  = document.getElementById('btn-pause');
+    const iconPause = document.getElementById('icon-pause');
+    const iconPlay  = document.getElementById('icon-play');
+
+    const imgEls = {
+      'img-state-1': document.getElementById('img-state-1'),
+      'img-state-2': document.getElementById('img-state-2'),
+      'img-state-3': document.getElementById('img-state-3'),
+    };
+
+    function applyState(idx) {
+      const s = STATES[idx];
+
+      // Card class
+      card.classList.remove('is-waiting', 'is-processing', 'is-active');
+      card.classList.add(s.cardClass);
+
+      // Image crossfade
+      Object.values(imgEls).forEach(el => el.classList.remove('visible'));
+      imgEls[s.imgId].classList.add('visible');
+
+      // Title & desc fade
+      titleEl.classList.add('fading');
+      descEl.classList.add('fading');
+      setTimeout(() => {
+        titleEl.textContent = s.title;
+        descEl.textContent  = s.desc;
+        titleEl.classList.remove('fading');
+        descEl.classList.remove('fading');
+      }, FADE);
+
+      // Pill color + size
+      pillEl.style.backgroundColor = s.pillBg;
+      pillEl.style.color            = s.pillColor;
+      pillEl.style.padding          = `0 ${s.pillPx}`;
+
+      // Pill text slide
+      pillText.classList.add('exit-up');
+      setTimeout(() => {
+        pillText.textContent = s.pillText;
+        pillText.classList.remove('exit-up');
+        pillText.classList.add('enter-from-below');
+        requestAnimationFrame(() => requestAnimationFrame(() => {
+          pillText.classList.remove('enter-from-below');
+        }));
+      }, FADE);
+    }
+
+    function next() { current = (current + 1) % STATES.length; applyState(current); }
+    function prev() { current = (current - 1 + STATES.length) % STATES.length; applyState(current); }
+    function startTimer() { clearInterval(timer); timer = setInterval(next, DELAY); }
+
+    function setPaused(p) {
+      paused = p;
+      if (paused) {
+        clearInterval(timer);
+        iconPause.style.display = 'none';
+        iconPlay.style.display  = 'block';
+        ctrlLabel.textContent   = 'Pausado';
+      } else {
+        startTimer();
+        iconPause.style.display = 'block';
+        iconPlay.style.display  = 'none';
+        ctrlLabel.textContent   = 'Auto-play';
+      }
+    }
+
+    card.addEventListener('click', () => {
+      if (paused) { next(); return; }
+      clearInterval(timer); next(); startTimer();
+    });
+    document.getElementById('btn-prev').addEventListener('click', e => {
+      e.stopPropagation(); clearInterval(timer); prev(); if (!paused) startTimer();
+    });
+    document.getElementById('btn-next').addEventListener('click', e => {
+      e.stopPropagation(); clearInterval(timer); next(); if (!paused) startTimer();
+    });
+    btnPause.addEventListener('click', e => { e.stopPropagation(); setPaused(!paused); });
+
+    startTimer();
+  </script>
+</body>
+</html>
