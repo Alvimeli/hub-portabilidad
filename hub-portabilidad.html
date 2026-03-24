@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=360px, initial-scale=1.0">
+  <title>Hub · Portabilidade de salário</title>
+  <style>
+    /* ─── Proxima Nova · CDN MercadoLibre ─── */
+    @font-face {
+      font-family: 'Proxima Nova';
+      src: url('https://http2.mlstatic.com/ui/webfonts/v3.0.0/proxima-nova/proximanova-light.woff2') format('woff2');
+      font-weight: 300;
+      font-style: normal;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: 'Proxima Nova';
+      src: url('https://http2.mlstatic.com/ui/webfonts/v3.0.0/proxima-nova/proximanova-regular.woff2') format('woff2');
+      font-weight: 400;
+      font-style: normal;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: 'Proxima Nova';
+      src: url('https://http2.mlstatic.com/ui/webfonts/v3.0.0/proxima-nova/proximanova-semibold.woff2') format('woff2');
+      font-weight: 600;
+      font-style: normal;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: 'Proxima Nova';
+      src: url('https://http2.mlstatic.com/ui/webfonts/v4.2.0/proxima-nova/proxima-nova-700.woff2') format('woff2');
+      font-weight: 700;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    /* ─── Andes X Design Tokens ─── */
+    :root {
+      /* Colors */
+      --andes-color-neutral-white:          #ffffff;
+      --andes-color-text-primary:           #282834;
+      --andes-color-text-secondary:         #646587;
+      --andes-color-neutral-dark:           #09090c;
+      --andes-color-neutral-stroke:         #d0d4e6;
+
+      /* Feedback */
+      --andes-color-feedback-bg-positive:   #defade;
+      --andes-color-feedback-text-positive: #124515;
+      --andes-color-feedback-bg-info:       #e9f1ff;
+      --andes-color-feedback-text-info:     #272c96;
+
+      /* Link / Accent (Andes X) */
+      --andes-color-blue-500:               #434ce4;
+      --andes-color-text-link-default:      #434ce4;
+
+      /* Spacing (escala Andes X) */
+      --sp-pico:   2px;
+      --sp-xnano:  4px;
+      --sp-xmicro: 8px;
+      --sp-micro:  12px;
+      --sp-xtiny:  16px;
+      --sp-xsmall: 24px;
+      --sp-small:  32px;
+
+      /* Border radius */
+      --br-full:   9999px;
+      --br-small:  8px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #eef0f5;
+      min-height: 100vh;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 32px 0 48px;
+      font-family: 'Proxima Nova', -apple-system, Helvetica Neue, Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ─── Phone frame ─── */
+    .phone {
+      width: 360px;
+      background: var(--andes-color-neutral-white);
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 8px 40px rgba(0, 0, 0, 0.18);
+      display: flex;
+      flex-direction: column;
+      gap: var(--sp-small); /* 32px between top container and benefits container */
+      padding-bottom: 0;
+    }
+
+    /* ─── Top Container (Header + Bank) gap 24px ─── */
+    .top-container {
+      display: flex;
+      flex-direction: column;
+      gap: var(--sp-xsmall); /* 24px */
+    }
+
+    /* ─── Status Bar ─── */
+    .status-bar {
+      height: 52px;
+      padding: 10px 24px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      position: relative;
+    }
+    .status-time {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--andes-color-text-primary);
+      letter-spacing: 0.14px;
+      line-height: 20px;
+    }
+    .status-camera {
+      position: absolute;
+      top: 18px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 12px;
+      height: 12px;
+      background: var(--andes-color-neutral-dark);
+      border-radius: 50%;
+    }
+    .status-icons {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* ─── Andes Header (subsection) ─── */
+    .header {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+    .header-nav {
+      padding: 8px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .icon-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: var(--andes-border-radius-actions-inputs-default, 12px);
+      background: #e9f1ff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      border: none;
+      flex-shrink: 0;
+    }
+    .header-title {
+      padding: 4px 16px 16px;
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--andes-color-text-primary);
+      line-height: 34px;
+      letter-spacing: -0.3px;
+    }
+
+    /* ─── Approval Status / Bank Row ─── */
+    .approval-status {
+      padding: 0 var(--sp-xnano); /* px-4px */
+    }
+    .bank-row {
+      display: flex;
+      align-items: center;
+      gap: var(--sp-micro);    /* gap-12px */
+      padding: 0 var(--sp-micro); /* px-12px */
+      padding-top: var(--sp-xnano); /* pt-4px */
+    }
+    .bank-thumbnail {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      border: 2px solid var(--andes-color-neutral-stroke);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      flex-shrink: 0;
+      background: white;
+    }
+    .bank-thumbnail img {
+      width: 18px;
+      height: 18px;
+      object-fit: contain;
+    }
+    .bank-content {
+      display: flex;
+      flex-direction: column;
+      gap: var(--sp-xnano); /* gap-4px */
+      padding-top: var(--sp-xnano);
+    }
+    .bank-name-row {
+      display: flex;
+      align-items: center;
+      gap: var(--sp-xnano);
+    }
+    .bank-name {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--andes-color-text-primary);
+      line-height: 20px;
+    }
+
+    /* Badge pill - "1º salário entrou" */
+    .badge-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--sp-xnano);
+      background: var(--andes-color-feedback-bg-positive);
+      border-radius: var(--br-full);
+      padding: var(--sp-pico) var(--sp-xmicro);
+      height: 20px;
+      width: fit-content;
+    }
+    .badge-pill-text {
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--andes-color-feedback-text-positive);
+      line-height: 12px;
+    }
+
+    /* ─── Benefits Container gap 16px ─── */
+    .benefits-container {
+      display: flex;
+      flex-direction: column;
+      gap: var(--sp-xtiny); /* 16px */
+      flex: 1;
+    }
+
+    /* Andes Titles – Section Title */
+    .section-title {
+      padding: 0 var(--sp-xtiny);
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--andes-color-text-primary);
+      line-height: 22px;
+    }
+
+    /* Benefits grid */
+    .benefits-grid {
+      padding: 0 var(--sp-xtiny);   /* px-16px, py-0 */
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--sp-micro);          /* gap-12px */
+      overflow: hidden;
+    }
+
+    /* Andes Card – benefit */
+    .benefit-card {
+      width: 158px;
+      min-width: 158px;
+      max-width: 158px;
+      flex: 1 0 158px;
+      background: var(--andes-color-neutral-white);
+      border-radius: var(--andes-border-radius-containers-default, 20px);
+      border: 1px solid var(--andes-card-color-border-default, #d0d4e6);
+      padding: var(--sp-xtiny);      /* 16px */
+      display: flex;
+      flex-direction: column;
+      gap: var(--sp-xmicro);         /* 8px */
+      box-shadow: none;
+    }
+
+    .card-img-area {
+      height: 56px;
+      display: flex;
+      align-items: flex-end;
+    }
+    .card-img-area img {
+      height: 56px;
+      width: auto;
+      max-width: 100%;
+      object-fit: contain;
+      object-position: left bottom;
+    }
+
+    .card-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--andes-color-text-primary);
+      line-height: 20px;
+    }
+
+    .card-desc {
+      font-size: 14px;
+      font-weight: 400;
+      color: var(--andes-color-text-primary);
+      line-height: 18px;
+      flex: 1;
+    }
+
+    /* Status badges inside cards */
+    .card-badge {
+      display: inline-flex;
+      align-items: center;
+      border-radius: var(--br-full);
+      padding: 3px 10px;
+      font-size: 11px;
+      font-weight: 600;
+      width: fit-content;
+      line-height: 16px;
+    }
+    .badge-processing {
+      background: var(--andes-color-feedback-bg-info);
+      color: var(--andes-color-feedback-text-info);
+    }
+    .badge-active {
+      background: var(--andes-color-feedback-bg-positive);
+      color: var(--andes-color-feedback-text-positive);
+    }
+
+    /* Andes Textlink */
+    .card-textlink {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--andes-color-text-link-default);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .card-textlink:hover { text-decoration: underline; }
+
+    /* ─── Bottom home indicator ─── */
+    .bottom-indicator {
+      min-height: 24px;
+      max-height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .home-pill {
+      width: 108px;
+      height: 4px;
+      background: var(--andes-color-neutral-dark);
+      border-radius: 12px;
+    }
+  </style>
+</head>
+<body>
+<div class="phone">
+
+  <!-- ── Top Container ── -->
+  <div class="top-container">
+
+    <!-- Andes Header: Status bar + Nav + Title -->
+    <div class="header">
+
+      <!-- Status Bar -->
+      <div class="status-bar">
+        <span class="status-time">9:30</span>
+        <div class="status-camera"></div>
+        <div class="status-icons">
+          <!-- WiFi -->
+          <svg width="17" height="13" viewBox="0 0 17 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M8.5 10a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3z" fill="#282834"/>
+            <path d="M4.86 6.86a5.14 5.14 0 0 1 7.28 0" stroke="#282834" stroke-width="1.4" stroke-linecap="round" fill="none"/>
+            <path d="M1.5 3.5a10.5 10.5 0 0 1 14 0" stroke="#282834" stroke-width="1.4" stroke-linecap="round" fill="none"/>
+          </svg>
+          <!-- Signal bars -->
+          <svg width="17" height="12" viewBox="0 0 17 12" fill="#282834" xmlns="http://www.w3.org/2000/svg">
+            <rect x="0" y="8" width="3" height="4" rx="0.5"/>
+            <rect x="4.5" y="5.5" width="3" height="6.5" rx="0.5"/>
+            <rect x="9" y="3" width="3" height="9" rx="0.5"/>
+            <rect x="13.5" y="0" width="3" height="12" rx="0.5"/>
+          </svg>
+          <!-- Battery -->
+          <svg width="9" height="15" viewBox="0 0 9 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="0.75" y="2" width="7.5" height="12" rx="1.5" stroke="#282834" stroke-width="1.5"/>
+            <rect x="2" y="3.5" width="5" height="9" rx="0.5" fill="#282834"/>
+            <path d="M3 0.5h3a.5.5 0 0 1 .5.5v1H2.5V1A.5.5 0 0 1 3 .5z" fill="#282834"/>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Nav row (icon buttons) -->
+      <div class="header-nav">
+        <button class="icon-btn" aria-label="Voltar">
+          <img src="img header/Chevron left.svg" width="20" height="20" alt="">
+        </button>
+        <button class="icon-btn" aria-label="IA">
+          <img src="img header/IA Star.svg" width="20" height="20" alt="">
+        </button>
+      </div>
+
+      <!-- Title -->
+      <h1 class="header-title">Portabilidade de salário</h1>
+    </div>
+
+    <!-- Approval Status (Bank row) -->
+    <div class="approval-status">
+      <div class="bank-row">
+        <!-- Andes Thumbnail -->
+        <div class="bank-thumbnail">
+          <img src="img banco/Banco_do_brasil.svg" width="18" height="18" alt="Banco do Brasil">
+        </div>
+        <!-- Accordion content -->
+        <div class="bank-content">
+          <div class="bank-name-row">
+            <span class="bank-name">Do Banco do Brasil</span>
+            <!-- Chevron down -->
+            <img src="img banco/Chevron down.svg" width="20" height="20" alt="">
+          </div>
+          <!-- Badge pill: 1º salário entrou -->
+          <div class="badge-pill">
+            <img src="img banco/Feedback positive.svg" width="12" height="12" alt="">
+            <span class="badge-pill-text">1º salário entrou</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /top-container -->
+
+
+  <!-- ── Benefits Container ── -->
+  <div class="benefits-container">
+
+    <!-- Andes Titles – Section Title -->
+    <h2 class="section-title">Seus benefícios</h2>
+
+    <!-- 2×2 Benefits Grid -->
+    <div class="benefits-grid">
+
+      <!-- Card 1: Cartão com mais limite -->
+      <div class="benefit-card">
+        <div class="card-img-area">
+          <img src="img beneficios/TC mini.png" alt="Cartão de crédito">
+        </div>
+        <p class="card-title">Cartão com mais limite</p>
+        <p class="card-desc">Vai ser liberado em até 20 dias.</p>
+        <span class="card-badge badge-processing">Em processamento</span>
+      </div>
+
+      <!-- Card 2: Meli+ Essencial grátis -->
+      <div class="benefit-card">
+        <div class="card-img-area">
+          <img src="img beneficios/meli+ mini.png" alt="Meli+">
+        </div>
+        <p class="card-title">Meli+ Essencial grátis</p>
+        <p class="card-desc">Frete grátis rápido e até 120% do CDI.</p>
+        <span class="card-badge badge-active">Ativo</span>
+      </div>
+
+      <!-- Card 3: Sorteio Salário em dobro -->
+      <div class="benefit-card">
+        <div class="card-img-area">
+          <img src="img beneficios/Sorteo mini.png" alt="Sorteio">
+        </div>
+        <p class="card-title">Sorteio Salário em dobro</p>
+        <p class="card-desc">Só falta confirmar sua participação.</p>
+        <a href="#" class="card-textlink">
+          Participar
+          <!-- Andes Arrow right -->
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M3 8H13M13 8L9 4M13 8L9 12" stroke="var(--andes-color-blue-500, #3483fa)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </a>
+      </div>
+
+      <!-- Card 4: Seguro com 25% OFF -->
+      <div class="benefit-card">
+        <div class="card-img-area">
+          <img src="img beneficios/Seguro mini.png" alt="Seguro">
+        </div>
+        <p class="card-title">Seguro com 25% OFF</p>
+        <p class="card-desc">Liberado! Contrate por R$ 5,99/mês.</p>
+        <a href="#" class="card-textlink">
+          Contratar
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M3 8H13M13 8L9 4M13 8L9 12" stroke="var(--andes-color-blue-500, #3483fa)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </a>
+      </div>
+
+    </div><!-- /benefits-grid -->
+  </div><!-- /benefits-container -->
+
+
+  <!-- ── Bottom home indicator ── -->
+  <div class="bottom-indicator">
+    <div class="home-pill"></div>
+  </div>
+
+</div><!-- /phone -->
+</body>
+</html>
